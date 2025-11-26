@@ -1,5 +1,6 @@
 import LightRays from "@/components/LightRays";
 import Navbar from "@/components/Navbar";
+import SentryFeedback from "@/components/SentryFeedback";
 import type { Metadata } from "next";
 import { Martian_Mono, Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
@@ -44,6 +45,7 @@ export default function RootLayout({
                     />
                 </div>
                 <main>{children}</main>
+                <SentryFeedback />
             </body>
         </html>
     );
