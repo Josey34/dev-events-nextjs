@@ -5,23 +5,26 @@ import { events } from "@/lib/constants";
 const Page = () => {
     return (
         <section>
+            {/* Title */}
             <h1 className="text-center">
                 The Hub for Every Dev <br /> Event You Can&apos;t Miss
             </h1>
             <p className="text-center mt-5">
                 Hackathons, Meetups, and Conferences, All in One Place
             </p>
-
+            
+            {/* Title Button */}
             <ExploreBtn />
-
+            
+            {/* Events */}
             <div className="mt-20 space-y-7">
                 <h3>Feature Events</h3>
 
                 <ul className="events">
                     {events.map((event) => (
-                      <li key={event.title}>
-                        <EventCard {...event} />
-                      </li>
+                        <li key={event.title}>
+                            <EventCard {...event} />
+                        </li>
                     ))}
                 </ul>
             </div>
