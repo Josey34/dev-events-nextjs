@@ -5,6 +5,7 @@ import EventDetailItem from "@/components/EventComponents/EventDetailItem";
 import EventTags from "@/components/EventComponents/EventTags";
 import { IEvent } from "@/database/event.model";
 import { getSimilarEventsBySlug } from "@/lib/actions/event.action";
+import { cacheLife } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -12,6 +13,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
 type EventData = Pick<
     IEvent,
+    | "_id"
     | "description"
     | "image"
     | "overview"
@@ -25,11 +27,14 @@ type EventData = Pick<
     | "organizer"
 >;
 
-const EventDetails = async ({
+const EventDetailsPage = async ({
     params,
 }: {
     params: Promise<{ slug: string }>;
 }) => {
+    'use cache';
+    cacheLife("hours");
+    
     const { slug } = await params;
 
     let event: EventData;
@@ -175,7 +180,7 @@ const EventDetails = async ({
                             </p>
                         )}
                         
-                        <BookEvent />
+                        <BookEvent eventId={event._id} slug={slug} />
                     </div>
                 </aside>
             </div>
@@ -193,4 +198,4 @@ const EventDetails = async ({
 };
 
 
-export default EventDetails;
+export default EventDetailsPage;

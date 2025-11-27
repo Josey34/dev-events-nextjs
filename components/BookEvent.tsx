@@ -1,14 +1,67 @@
 "use client";
 
+import { createBooking } from "@/lib/actions/booking.action";
+import * as Sentry from "@sentry/nextjs";
 import { useState } from "react";
 
-const BookEvent = () => {
+const BookEvent = ({ eventId, slug }: { eventId: string, slug: string }) => {
     const [email, setEmail] = useState("");
     const [submitted, setIsSubmitted] = useState(false);
     
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
+        // Track email submission attempt with Sentry
+        Sentry.captureMessage('Email submission started', {
+            level: 'info',
+            tags: {
+                event_slug: slug,
+                event_id: eventId,
+            },
+            extra: {
+                email: email,
+                timestamp: new Date().toISOString(),
+            }
+        });
+
+        const { success } = await createBooking({ eventId, slug, email });
+
+        if(success) {
+            // Track successful email submission
+            Sentry.captureMessage('Email submission successful', {
+                level: 'info',
+                tags: {
+                    event_slug: slug,
+                    event_id: eventId,
+                    submission_status: 'success',
+                },
+                extra: {
+                    email: email,
+                }
+            });
+
+            // Set user context for future events
+            Sentry.setUser({ email: email });
+
+            setIsSubmitted(true);
+        } else {
+            // Track failed email submission
+            Sentry.captureException(new Error('Booking creation failed'), {
+                level: 'error',
+                tags: {
+                    event_slug: slug,
+                    event_id: eventId,
+                    submission_status: 'failed',
+                },
+                extra: {
+                    email: email,
+                    error: error,
+                }
+            });
+
+            console.error("Booking creation error", error);
+        }
+
         setTimeout(() => {
             setIsSubmitted(true);
         }, 1000);
