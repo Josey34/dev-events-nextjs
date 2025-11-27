@@ -29,6 +29,9 @@ type EventData = Pick<
 >;
 
 async function SimilarEvents({ params }: { params: Promise<{ slug: string }> }) {
+    'use cache';
+    cacheLife("hours");
+
     const { slug } = await params;
     const similarEvents: IEvent[] = (await getSimilarEventsBySlug(slug)) || [];
 

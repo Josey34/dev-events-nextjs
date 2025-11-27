@@ -78,10 +78,12 @@ export const GET = async() => {
 
         const events = await Event.find().sort({ createdAt: -1 }).lean();
 
-        // Convert MongoDB _id to string for serialization
+        // Convert MongoDB _id and dates to strings for serialization
         const serializedEvents = events.map(event => ({
             ...event,
             _id: event._id.toString(),
+            createdAt: event.createdAt?.toISOString(),
+            updatedAt: event.updatedAt?.toISOString(),
         }));
 
         return NextResponse.json({ message: "Events Fetched Successfully", events: serializedEvents});

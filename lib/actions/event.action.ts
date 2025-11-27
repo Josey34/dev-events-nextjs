@@ -14,10 +14,12 @@ export const getSimilarEventsBySlug = async (slug: string) => {
         const event = await Event.findOne({ slug }).lean();
         const events = await Event.find({ _id: { $ne: event?._id}, tags: { $in: event?.tags } }).lean();
 
-        // Convert MongoDB objects to plain objects with serializable _id
+        // Convert MongoDB objects to plain objects with serializable _id and dates
         return events.map(event => ({
             ...event,
             _id: event._id.toString(),
+            createdAt: event.createdAt?.toISOString(),
+            updatedAt: event.updatedAt?.toISOString(),
         }));
     } catch (e: unknown) {
         console.log(e instanceof Error ? e.message : 'An error occurred');

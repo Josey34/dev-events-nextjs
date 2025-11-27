@@ -48,10 +48,12 @@ export const GET = async (
             );
         }
 
-        // Convert MongoDB _id to string for serialization
+        // Convert MongoDB _id and dates to strings for serialization
         const serializedEvent = {
             ...event,
             _id: event._id.toString(),
+            createdAt: event.createdAt?.toISOString(),
+            updatedAt: event.updatedAt?.toISOString(),
         };
 
         // Return the event data
@@ -154,10 +156,12 @@ export const PUT = async (
             );
         }
 
-        // Convert MongoDB _id to string for serialization
+        // Convert MongoDB _id and dates to strings for serialization
         const serializedEvent = {
             ...updatedEvent,
             _id: updatedEvent._id.toString(),
+            createdAt: updatedEvent.createdAt?.toISOString(),
+            updatedAt: updatedEvent.updatedAt?.toISOString(),
         };
 
         return NextResponse.json(
