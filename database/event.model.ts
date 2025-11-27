@@ -141,9 +141,6 @@ EventSchema.pre("save", function () {
     }
 });
 
-// Create unique index on slug for faster queries and uniqueness enforcement
-EventSchema.index({ slug: 1 }, { unique: true });
-
 // Prevent model recompilation in development (Next.js hot reload)
 const Event = models.Event || model<IEvent>("Event", EventSchema);
 
