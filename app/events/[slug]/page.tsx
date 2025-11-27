@@ -8,6 +8,7 @@ import { getSimilarEventsBySlug } from "@/lib/actions/event.action";
 import { cacheLife } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
@@ -27,6 +28,22 @@ type EventData = Pick<
     | "organizer"
 >;
 
+async function SimilarEvents({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const similarEvents: IEvent[] = (await getSimilarEventsBySlug(slug)) || [];
+
+    return (
+        <div className="flex w-full flex-col gap-4 pt-20">
+            <h2>Similar Events</h2>
+            <div className="events">
+                {similarEvents.length > 0 && similarEvents.map((similarEvent: IEvent) => (
+                    <EventCard key={similarEvent.title} {...similarEvent} />
+                ))}
+            </div>
+        </div>
+    );
+}
+
 const EventDetailsPage = async ({
     params,
 }: {
@@ -40,9 +57,7 @@ const EventDetailsPage = async ({
     let event: EventData;
 
     try {
-        const request = await fetch(`${BASE_URL}/api/events/${slug}`, {
-            cache: "no-store",
-        });
+        const request = await fetch(`${BASE_URL}/api/events/${slug}`);
 
         if (!request.ok) {
             return notFound();
@@ -99,10 +114,8 @@ const EventDetailsPage = async ({
         console.error("Error parsing tags:", error);
         eventTags = Array.isArray(tags) ? tags : [];
     }
-    
-    const bookings = 10;
 
-    const similarEvents: IEvent[] = (await getSimilarEventsBySlug(slug)) || [];
+    const bookings = 10;
 
     return (
         <section id="event">
@@ -184,15 +197,10 @@ const EventDetailsPage = async ({
                     </div>
                 </aside>
             </div>
-            
-            <div className="flex w-full flex-col gap-4 pt-20">
-                <h2>Similar Events</h2>
-                <div className="events">
-                    {similarEvents.length > 0 && similarEvents.map((similarEvent: IEvent) => (
-                        <EventCard key={similarEvent.title} {...similarEvent} />
-                    ))}
-                </div>
-            </div>
+
+            <Suspense fallback={<div className="flex w-full flex-col gap-4 pt-20"><h2>Similar Events</h2><p>Loading similar events...</p></div>}>
+                <SimilarEvents params={params} />
+            </Suspense>
         </section>
     );
 };

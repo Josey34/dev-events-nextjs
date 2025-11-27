@@ -75,10 +75,16 @@ export const POST = async(req: NextRequest) => {
 export const GET = async() => {
     try {
         await connectToDatabase();
-        
-        const events = await Event.find().sort({ createdAt: -1 });
-        
-        return NextResponse.json({ message: "Events Fetched Successfully", events: events});
+
+        const events = await Event.find().sort({ createdAt: -1 }).lean();
+
+        // Convert MongoDB _id to string for serialization
+        const serializedEvents = events.map(event => ({
+            ...event,
+            _id: event._id.toString(),
+        }));
+
+        return NextResponse.json({ message: "Events Fetched Successfully", events: serializedEvents});
     } catch (e) {
         return NextResponse.json(
             {

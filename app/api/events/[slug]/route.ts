@@ -48,11 +48,17 @@ export const GET = async (
             );
         }
 
+        // Convert MongoDB _id to string for serialization
+        const serializedEvent = {
+            ...event,
+            _id: event._id.toString(),
+        };
+
         // Return the event data
         return NextResponse.json(
             {
                 message: "Event fetched successfully",
-                event,
+                event: serializedEvent,
             },
             { status: 200 }
         );
@@ -148,10 +154,16 @@ export const PUT = async (
             );
         }
 
+        // Convert MongoDB _id to string for serialization
+        const serializedEvent = {
+            ...updatedEvent,
+            _id: updatedEvent._id.toString(),
+        };
+
         return NextResponse.json(
             {
                 message: "Event updated successfully",
-                event: updatedEvent,
+                event: serializedEvent,
             },
             { status: 200 }
         );
