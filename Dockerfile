@@ -22,8 +22,17 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Build the application
-RUN npm run build
+# Accept build arguments for environment variables
+ARG MONGODB_URI
+ARG SENTRY_AUTH_TOKEN
+ARG NEXT_PUBLIC_BASE_URL
+ENV MONGODB_URI=${MONGODB_URI}
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+ENV NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+ENV SKIP_ENV_VALIDATION=1
+
+# Build the application - use experimental build mode to skip static generation
+RUN npm run build -- --experimental-build-mode compile
 
 # Production image, copy all the files and run next
 FROM base AS runner

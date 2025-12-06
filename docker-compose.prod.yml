@@ -8,6 +8,9 @@ services:
       dockerfile: Dockerfile
       args:
         - NODE_ENV=production
+        - MONGODB_URI=${MONGODB_URI}
+        - SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+        - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
     container_name: dev-events-nextjs-prod
     restart: unless-stopped
     ports:
