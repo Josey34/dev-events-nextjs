@@ -13,7 +13,9 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com"
       }
     ]
-  }
+  },
+  // Enable standalone output for Docker production builds
+  output: "standalone",
 };
 
 export default withSentryConfig(nextConfig, {
